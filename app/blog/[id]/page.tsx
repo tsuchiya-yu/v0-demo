@@ -1,13 +1,20 @@
 "use client";
 
-import { useRouter } from 'next/router';
+import { useParams } from 'next/navigation';
 import { BlogPostComponent } from "@/components/BlogPostComponent"
 
 export default function BlogPostPage() {
-  const router = useRouter();
-  const { id } = router.query;
+  const params = useParams();
+  let { id } = params;
 
-  if (typeof id !== 'string') {
+  console.log('id', id);
+  console.log('params', params);
+
+  if (Array.isArray(id)) {
+    id = id[0];
+  }
+
+  if (!id) {
     return <div>無効なIDです</div>;
   }
 
