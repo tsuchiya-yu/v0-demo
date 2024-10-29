@@ -10,12 +10,16 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
-export function BlogListComponent() {
-  const [posts, setPosts] = useState([])
+interface Post {
+  id: string;
+  image_url: string;
+  title: string;
+  excerpt: string;
+  created_at: string;
+}
 
-  useEffect(() => {
-    fetchPosts();
-  }, [fetchPosts]);
+export function BlogListComponent() {
+  const [posts, setPosts] = useState<Post[]>([])
 
   const fetchPosts = useCallback(async () => {
     const { data, error } = await supabase
@@ -26,9 +30,13 @@ export function BlogListComponent() {
     if (error) {
       console.error('ブログ記事の取得に失敗しました:', error);
     } else {
-      setPosts(data);
+      setPosts(data as Post[]);
     }
-  }, [supabase]);
+  }, []);
+
+  useEffect(() => {
+    fetchPosts();
+  }, [fetchPosts]);
 
   return (
       <div className="container mx-auto px-4 py-8">

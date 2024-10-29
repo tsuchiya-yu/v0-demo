@@ -10,9 +10,25 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
+interface CatInfo {
+  name: string;
+  short_description: string;
+  long_description: string;
+  image_url: string;
+  instagram_url: string;
+  twitter_url: string;
+}
+
+interface Post {
+  id: string;
+  title: string;
+  excerpt: string;
+  image_url: string;
+}
+
 export function HomeComponent() {
-  const [catInfo, setCatInfo] = useState(null)
-  const [posts, setPosts] = useState([])
+  const [catInfo, setCatInfo] = useState<CatInfo | null>(null)
+  const [posts, setPosts] = useState<Post[]>([])
 
   const fetchCatInfo = useCallback(async () => {
     const { data, error } = await supabase
@@ -23,7 +39,7 @@ export function HomeComponent() {
     if (error) {
       console.error('猫の情報の取得に失敗しました:', error);
     } else {
-      setCatInfo(data);
+      setCatInfo(data as CatInfo);
     }
   }, []);
   
@@ -37,7 +53,7 @@ export function HomeComponent() {
     if (error) {
       console.error('最新の投稿の取得に失敗しました:', error);
     } else {
-      setPosts(data);
+      setPosts(data as Post[]);
     }
   }, []);
   

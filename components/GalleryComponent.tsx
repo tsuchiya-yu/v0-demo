@@ -10,8 +10,14 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
+interface ImageData {
+  id: string;
+  url: string;
+  comment: string;
+}
+
 export function GalleryComponent() {
-  const [images, setImages] = useState([])
+  const [images, setImages] = useState<ImageData[]>([])
   const [currentPage, setCurrentPage] = useState(1)
   const [totalPages, setTotalPages] = useState(0)
   const imagesPerPage = 10
@@ -26,8 +32,8 @@ export function GalleryComponent() {
     if (error) {
       console.error('画像の取得に失敗しました:', error);
     } else {
-      setImages(data);
-      setTotalPages(Math.ceil(count / imagesPerPage));
+      setImages(data as ImageData[]);
+      setTotalPages(Math.ceil((count ?? 0) / imagesPerPage));
     }
   }, [currentPage, imagesPerPage]);
   

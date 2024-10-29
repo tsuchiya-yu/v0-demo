@@ -8,8 +8,19 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
-export function BlogPostComponent({ id }) {
-  const [post, setPost] = useState(null);
+interface Post {
+  title: string;
+  created_at: string;
+  image_url: string;
+  content: string;
+}
+
+interface BlogPostComponentProps {
+  id: string;
+}
+
+export function BlogPostComponent({ id }: BlogPostComponentProps) {
+  const [post, setPost] = useState<Post | null>(null);
 
   const fetchPost = useCallback(async () => {
     const { data, error } = await supabase
@@ -21,7 +32,7 @@ export function BlogPostComponent({ id }) {
     if (error) {
       console.error('ブログ記事の取得に失敗しました:', error);
     } else {
-      setPost(data);
+      setPost(data as Post);
     }
   }, [id]);
 
