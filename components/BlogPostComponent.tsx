@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import Image from 'next/image';
 import { createClient } from '@supabase/supabase-js';
 
@@ -9,25 +9,25 @@ const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.
 export function BlogPostComponent({ id }) {
   const [post, setPost] = useState(null);
 
-  useEffect(() => {
-    if (id) {
-      fetchPost();
-    }
-  }, [id]);
-
-  async function fetchPost() {
+  const fetchPost = useCallback(async () => {
     const { data, error } = await supabase
       .from('blog_posts')
       .select('*')
       .eq('id', id)
       .single();
-
+  
     if (error) {
       console.error('ブログ記事の取得に失敗しました:', error);
     } else {
       setPost(data);
     }
-  }
+  }, [id]);
+
+  useEffect(() => {
+    if (id) {
+      fetchPost();
+    }
+  }, [id, fetchPost]);
 
   if (!post) {
     return (

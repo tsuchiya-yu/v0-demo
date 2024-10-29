@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import Image from 'next/image'
 import { createClient } from '@supabase/supabase-js'
 import { Button } from "@/components/ui/button"
@@ -14,24 +14,24 @@ export function GalleryComponent() {
   const [totalPages, setTotalPages] = useState(0)
   const imagesPerPage = 10
 
-  useEffect(() => {
-    fetchImages()
-  }, [currentPage])
-
-  async function fetchImages() {
+  const fetchImages = useCallback(async () => {
     const { data, error, count } = await supabase
       .from('gallery')
       .select('*', { count: 'exact' })
       .range((currentPage - 1) * imagesPerPage, currentPage * imagesPerPage - 1)
-      .order('created_at', { ascending: false })
-
+      .order('created_at', { ascending: false });
+  
     if (error) {
-      console.error('画像の取得に失敗しました:', error)
+      console.error('画像の取得に失敗しました:', error);
     } else {
-      setImages(data)
-      setTotalPages(Math.ceil(count / imagesPerPage))
+      setImages(data);
+      setTotalPages(Math.ceil(count / imagesPerPage));
     }
-  }
+  }, [currentPage, imagesPerPage]);
+  
+  useEffect(() => {
+    fetchImages();
+  }, [fetchImages]);
 
   return (
       <div className="container mx-auto px-4 py-8">

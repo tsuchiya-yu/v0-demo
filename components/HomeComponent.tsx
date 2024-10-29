@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import Image from 'next/image'
 import { createClient } from '@supabase/supabase-js'
 import { Button } from "@/components/ui/button"
@@ -12,37 +12,37 @@ export function HomeComponent() {
   const [catInfo, setCatInfo] = useState(null)
   const [posts, setPosts] = useState([])
 
-  useEffect(() => {
-    fetchCatInfo()
-    fetchLatestPosts()
-  }, [])
-
-  async function fetchCatInfo() {
+  const fetchCatInfo = useCallback(async () => {
     const { data, error } = await supabase
       .from('cat_info')
       .select('*')
-      .single()
-    
+      .single();
+  
     if (error) {
-      console.error('猫の情報の取得に失敗しました:', error)
+      console.error('猫の情報の取得に失敗しました:', error);
     } else {
-      setCatInfo(data)
+      setCatInfo(data);
     }
-  }
-
-  async function fetchLatestPosts() {
+  }, []);
+  
+  const fetchLatestPosts = useCallback(async () => {
     const { data, error } = await supabase
       .from('blog_posts')
       .select('*')
       .order('created_at', { ascending: false })
-      .limit(3)
-    
+      .limit(3);
+  
     if (error) {
-      console.error('最新の投稿の取得に失敗しました:', error)
+      console.error('最新の投稿の取得に失敗しました:', error);
     } else {
-      setPosts(data)
+      setPosts(data);
     }
-  }
+  }, []);
+  
+  useEffect(() => {
+    fetchCatInfo();
+    fetchLatestPosts();
+  }, [fetchCatInfo, fetchLatestPosts]);
 
   if (!catInfo) {
     return <div>読み込み中...</div>

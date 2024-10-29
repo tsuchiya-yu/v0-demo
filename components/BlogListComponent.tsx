@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { createClient } from '@supabase/supabase-js'
@@ -12,21 +12,21 @@ export function BlogListComponent() {
   const [posts, setPosts] = useState([])
 
   useEffect(() => {
-    fetchPosts()
-  }, [])
+    fetchPosts();
+  }, [fetchPosts]);
 
-  async function fetchPosts() {
+  const fetchPosts = useCallback(async () => {
     const { data, error } = await supabase
       .from('blog_posts')
       .select('*')
-      .order('created_at', { ascending: false })
-
+      .order('created_at', { ascending: false });
+  
     if (error) {
-      console.error('ブログ記事の取得に失敗しました:', error)
+      console.error('ブログ記事の取得に失敗しました:', error);
     } else {
-      setPosts(data)
+      setPosts(data);
     }
-  }
+  }, [supabase]);
 
   return (
       <div className="container mx-auto px-4 py-8">
